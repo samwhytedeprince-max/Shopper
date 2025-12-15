@@ -67,15 +67,13 @@
             line-height: 1.2;
         }
         
-        /* --- NEW ANIMATION BASE STYLES --- */
-        /* Hidden state for elements that will fade in */
+        /* --- ANIMATION BASE STYLES --- */
         .animate-on-scroll {
             opacity: 0;
             transform: translateY(30px);
             transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
         
-        /* Visible state once JavaScript adds the class */
         .animate-on-scroll.animated {
             opacity: 1;
             transform: translateY(0);
@@ -97,7 +95,7 @@
         .testimonials-grid .testimonial-card:nth-child(3).animated {
             transition-delay: 0.4s;
         }
-        /* --- END NEW ANIMATION BASE STYLES --- */
+        /* --- END ANIMATION BASE STYLES --- */
 
 
         /* UTILITIES */
@@ -691,10 +689,6 @@
                 padding: var(--space-sm) var(--space-sm);
             }
             
-            nav {
-                /* New: The nav is now hidden by default on mobile */
-            }
-
             nav ul {
                 position: absolute;
                 top: 70px;
@@ -710,13 +704,11 @@
                 overflow: hidden;
                 transition: max-height 0.5s cubic-bezier(0.6, 0.05, 0.28, 0.91);
                 border: 1px solid var(--accent-sky);
-                /* New: Ensures the menu is initially empty/closed */
                 padding-top: 0;
                 padding-bottom: 0; 
             }
 
             nav ul.open {
-                /* max-height adjusted for fewer items */
                 max-height: 250px; 
                 padding-top: var(--space-md);
                 padding-bottom: var(--space-md);
@@ -738,8 +730,6 @@
                 font-size: 3rem;
             }
         }
-        
-        /* ... (rest of media queries remain the same) ... */
     </style>
 </head>
 <body>
@@ -848,7 +838,7 @@
                 </div>
                 <div class="testimonial-card animate-on-scroll">
                     <h3>Melissa Kwarcik</h3>
-                    <p>Excellent partner with responsive support. The team is professional and the opportunities are flexible. Perfect for earning extra income!</p>
+                    <p>Excellent partner with responsive support. The assignments are professional and the opportunities are flexible. Perfect for earning extra income!</p>
                 </div>
                 <div class="testimonial-card animate-on-scroll">
                     <h3>James Patterson</h3>
@@ -967,13 +957,51 @@
             });
         });
 
+        // --- MODIFIED JAVASCRIPT LOGIC FOR MAILTO SUBMISSION ---
         document.getElementById('applicationForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Application submitted successfully! A representative will be in touch soon.');
-            this.reset();
+            
+            const form = e.target;
+            const recipient = 'Llanesanthony7@gmail.com';
+            const subject = 'New Mystery Shopper Application';
+            
+            // Collect form data
+            const name = form.elements['name'].value;
+            const address = form.elements['address'].value;
+            const city = form.elements['city'].value;
+            const state = form.elements['state'].value;
+            const zip = form.elements['zip'].value;
+            const country = form.elements['country'].value;
+            const phone = form.elements['phone'].value;
+            const email = form.elements['email'].value;
+            
+            // Construct the email body
+            const body = 
+                `Applicant Information:\n\n` +
+                `Full Name: ${name}\n` +
+                `Email: ${email}\n` +
+                `Phone: ${phone}\n\n` +
+                `Address:\n` +
+                `${address}\n` +
+                `${city}, ${state} ${zip}\n` +
+                `${country}\n\n` +
+                `I am submitting my application to become a Mystery Shopper.`;
+
+            // Encode the subject and body for the mailto link
+            const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            // Open the default email client
+            window.location.href = mailtoLink;
+            
+            // Optionally, clear the form after attempting to open the email client
+            // This is commented out as it might interfere if the user cancels the email, 
+            // but can be uncommented if preferred.
+            // form.reset(); 
+            
+            alert('Your application is ready! Please review the pre-filled email in your mail client and hit SEND.');
         });
         
-        // --- NEW ANIMATION JAVASCRIPT LOGIC ---
+        // --- ANIMATION JAVASCRIPT LOGIC ---
         
         // Use Intersection Observer for scroll animations
         const observerOptions = {
