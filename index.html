@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoppers - Mystery Shopping Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS RESET & VARIABLES - (Kept the advanced CSS from the previous step) */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Palette: Changed from Blue/Navy to Green/Charcoal/Gold */
+            --primary-navy: #1A374D; /* Dark Charcoal Blue (Primary Dark) */
+            --secondary-dark-blue: #3A664E; /* Dark Olive Green (Secondary Dark) */
+            --accent-sky: #A8CC60; /* Vibrant Lime Green (Primary Accent) */
+            --light-cerulean: #D4F4A2; /* Light Pastel Green (Secondary Accent) */
+            --background-light: #F9F9F9; /* Very Light Gray/Off-White */
+            --white: #FFFFFF;
+            --text-dark: #1A1A1A; /* Near Black */
+            --text-medium: #555555; /* Dark Gray */
+            --text-light: #AAAAAA; /* Light Gray */
+
+            /* Gradients: Updated to new color palette */
+            --gradient-main: linear-gradient(135deg, var(--primary-navy) 0%, var(--accent-sky) 100%);
+            --gradient-accent: linear-gradient(90deg, var(--light-cerulean) 0%, #6CC48B 100%); /* Adjusted gradient light end */
+            
+            /* Typography */
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Montserrat', sans-serif;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 4rem;
+            --space-xl: 6rem;
+            
+            /* Shadows & Effects (Adjusted shadow color opacity for new primary color) */
+            --shadow-sm: 0 4px 12px rgba(26, 55, 77, 0.08);
+            --shadow-md: 0 8px 24px rgba(26, 55, 77, 0.15);
+            --shadow-lg: 0 16px 48px rgba(26, 55, 77, 0.25);
+            --border-radius-md: 15px;
+            --border-radius-lg: 25px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: var(--font-main);
+            line-height: 1.7;
+            color: var(--text-medium);
+            background: var(--background-light);
+            overflow-x: hidden;
+            text-rendering: optimizeLegibility;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+        
+        /* --- NEW ANIMATION BASE STYLES --- */
+        /* Hidden state for elements that will fade in */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        /* Visible state once JavaScript adds the class */
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Delayed animation for children elements (like service cards) */
+        .services-grid .animate-on-scroll {
+            transition-delay: 0.1s; 
+        }
+        .services-grid .service-card:nth-child(2).animated {
+            transition-delay: 0.3s;
+        }
+        .services-grid .service-card:nth-child(3).animated {
+            transition-delay: 0.5s;
+        }
+        .testimonials-grid .testimonial-card:nth-child(2).animated {
+            transition-delay: 0.2s;
+        }
+        .testimonials-grid .testimonial-card:nth-child(3).animated {
+            transition-delay: 0.4s;
+        }
+        /* --- END NEW ANIMATION BASE STYLES --- */
+
+
+        /* UTILITIES */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+
+        /* HEADER */
+        header {
+            background: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--accent-sky);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem var(--space-md);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1rem;
+            position: relative;
+            transition: color 0.3s ease, transform 0.2s ease;
+            padding: 0.5rem 0;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: var(--accent-sky);
+            border-radius: 2px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        nav a:hover {
+            color: var(--accent-sky);
+            transform: translateY(-1px);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .cta-nav {
+            background: var(--gradient-main);
+            color: var(--white) !important;
+            padding: 0.7rem 1.8rem;
+            border-radius: var(--border-radius-lg);
+            font-weight: 800;
+            box-shadow: var(--shadow-md);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+        }
+
+        .cta-nav::after {
+            display: none;
+        }
+
+        .cta-nav:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(168, 204, 96, 0.4); /* Adjusted hover shadow color */
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            width: 30px;
+            height: 25px;
+            justify-content: space-around;
+        }
+
+        .hamburger div {
+            width: 100%;
+            height: 4px;
+            background: var(--primary-navy);
+            transition: 0.3s ease;
+            border-radius: 3px;
+        }
+        
+        /* Hamburger X animation */
+        .hamburger.open div:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .hamburger.open div:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.open div:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            background: var(--gradient-main);
+            color: var(--white);
+            padding: var(--space-xl) var(--space-md);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="3" fill="rgba(255,255,255,0.15)"/></svg>');
+            background-size: 20px 20px;
+            opacity: 0.8;
+            animation: backgroundPan 60s linear infinite;
+        }
+        
+        @keyframes backgroundPan {
+          from { background-position: 0 0; }
+          to { background-position: 100% 100%; }
+        }
+
+
+        .hero-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: var(--space-md);
+            line-height: 1.1;
+            letter-spacing: -2px;
+            color: var(--white);
+            text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.6rem;
+            margin-bottom: var(--space-sm);
+            font-weight: 600;
+            color: var(--background-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: var(--space-lg);
+            opacity: 0.95;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--white);
+            color: var(--primary-navy);
+            padding: 1.2rem 4rem;
+            border-radius: var(--border-radius-lg);
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        /* SECTION STYLING */
+        section {
+            padding: var(--space-xl) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: var(--space-sm);
+            color: var(--primary-navy);
+            letter-spacing: -1px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-medium);
+            margin-bottom: var(--space-lg);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* PURPOSE SECTION */
+        .purpose-section {
+            background: var(--background-light);
+        }
+
+        .purpose-card {
+            background: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            border-left: 8px solid var(--accent-sky);
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .purpose-card::before {
+            content: '🌿'; /* Changed icon for a "fresh" feel */
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            font-size: 3rem;
+            opacity: 0.1;
+            transform: rotate(10deg);
+            z-index: 0;
+        }
+
+        .purpose-card h3 {
+            font-size: 2rem;
+            color: var(--primary-navy);
+            margin-bottom: var(--space-sm);
+            font-weight: 800;
+        }
+
+        .purpose-card p {
+            font-size: 1.1rem;
+            color: var(--text-medium);
+        }
+
+        /* SERVICES SECTION */
+        .services-section {
+            background: var(--white);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+            border-top: 5px solid var(--accent-sky);
+            position: relative;
+        }
+        
+        .service-card:nth-child(2) { border-top-color: var(--secondary-dark-blue); } /* Changed to Dark Olive Green */
+        .service-card:nth-child(3) { border-top-color: var(--light-cerulean); } /* Changed to Light Pastel Green */
+
+        .service-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 15px 45px rgba(26, 55, 77, 0.2);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+            box-shadow: 0 5px 15px rgba(168, 204, 96, 0.3); /* Adjusted shadow color */
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover .service-icon {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .service-card h3 {
+            font-size: 1.8rem;
+            color: var(--primary-navy);
+            margin-bottom: var(--space-sm);
+            font-weight: 800;
+        }
+
+        .service-card p {
+            color: var(--text-medium);
+            font-size: 1rem;
+        }
+
+        /* TESTIMONIALS */
+        .testimonials-section {
+            background: var(--background-light);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--accent-sky);
+        }
+
+        .testimonial-card::before {
+            content: '❝';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10rem;
+            color: var(--accent-sky);
+            opacity: 0.05;
+            font-family: Arial, sans-serif;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .testimonial-card h3 {
+            font-size: 1.4rem;
+            color: var(--primary-navy);
+            margin-bottom: var(--space-sm);
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+        }
+
+        .testimonial-card p {
+            color: var(--text-dark);
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+            font-size: 1.1rem;
+        }
+
+        /* STATS SECTION */
+        .stats-section {
+            background: var(--gradient-main);
+            color: var(--white);
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 5px solid var(--accent-sky);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .stat-item {
+            padding: var(--space-sm);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-md);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-item h3 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+            text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* APPLICATION FORM SECTION */
+        .application-section {
+            background: var(--background-light);
+            display: none;
+            padding: var(--space-xl) 0;
+        }
+
+        .application-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .application-content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+
+        .intro-content {
+            background: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            border-left: 8px solid var(--light-cerulean);
+        }
+
+        .intro-content h2 {
+            color: var(--primary-navy);
+            margin-bottom: var(--space-md);
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .intro-content p {
+            color: var(--text-medium);
+            margin-bottom: var(--space-sm);
+            font-size: 1rem;
+        }
+        
+        .intro-content p strong {
+            color: var(--accent-sky);
+            font-weight: 700;
+        }
+
+        .form-container {
+            background: var(--white);
+            padding: var(--space-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--accent-sky);
+        }
+
+        .form-container h2 {
+            color: var(--primary-navy);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+            font-weight: 900;
+            font-size: 2.5rem;
+        }
+
+        .form-container label {
+            display: block;
+            margin-bottom: var(--space-xs);
+            font-weight: 700;
+            color: var(--primary-navy);
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: var(--space-md);
+            border: 2px solid var(--background-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: var(--background-light);
+        }
+
+        .form-container input:focus {
+            outline: none;
+            border-color: var(--accent-sky);
+            box-shadow: 0 0 0 4px rgba(168, 204, 96, 0.2); /* Adjusted focus shadow color */
+            background: var(--white);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .form-row > div {
+            margin-bottom: 0; 
+        }
+
+        .submit-button {
+            width: 100%;
+            background: var(--gradient-main);
+            color: var(--white);
+            padding: 1.2rem;
+            border: none;
+            border-radius: var(--border-radius-lg);
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: var(--space-md);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(26, 55, 77, 0.4);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--primary-navy);
+            color: var(--white);
+            text-align: center;
+            padding: var(--space-md);
+        }
+
+        footer p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (min-width: 1024px) {
+            .application-content-grid {
+                grid-template-columns: 1fr 1.2fr;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                padding: var(--space-sm) var(--space-sm);
+            }
+            
+            nav {
+                /* New: The nav is now hidden by default on mobile */
+            }
+
+            nav ul {
+                position: absolute;
+                top: 70px;
+                right: var(--space-sm);
+                background: var(--white);
+                width: 250px;
+                flex-direction: column;
+                padding: var(--space-md);
+                gap: 1.2rem;
+                border-radius: var(--border-radius-md);
+                box-shadow: var(--shadow-lg);
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.5s cubic-bezier(0.6, 0.05, 0.28, 0.91);
+                border: 1px solid var(--accent-sky);
+                /* New: Ensures the menu is initially empty/closed */
+                padding-top: 0;
+                padding-bottom: 0; 
+            }
+
+            nav ul.open {
+                /* max-height adjusted for fewer items */
+                max-height: 250px; 
+                padding-top: var(--space-md);
+                padding-bottom: var(--space-md);
+            }
+            
+            nav a {
+                font-size: 1.1rem;
+                width: 100%;
+                display: block;
+                padding: 0.5rem 0;
+                text-align: left;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+        }
+        
+        /* ... (rest of media queries remain the same) ... */
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="#home" class="logo">Shoppers</a>
+            
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+
+            <nav>
+                <ul class="desktop-menu" id="mobileMenu">
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#apply" class="cta-nav">Apply Now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Welcome to Shoppers</h1>
+            <p class="hero-subtitle">Shop and Get Paid</p>
+            <p>Earn $500 per mystery shopping assignment. Join our network of professional shoppers and help businesses deliver exceptional customer experiences.</p>
+            <button class="cta-button" onclick="showApplicationForm()">Start Earning Today</button>
+        </div>
+    </section>
+
+    <section class="purpose-section">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Our Purpose</h2>
+            <p class="section-subtitle animate-on-scroll">Transforming customer experiences through actionable insights</p>
+            
+            <div class="purpose-card animate-on-scroll">
+                <h3>Mystery Shopping Excellence</h3>
+                <p>Mystery Shopping Inc specializes in measuring service quality, job performance, compliance, and customer satisfaction. We provide businesses with actionable insights by evaluating customer experiences across retail, dining, and service environments. Our goal is to empower companies to improve service quality, resolve customer concerns, and enhance operational efficiency.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-section" id="services">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Our Services</h2>
+            <p class="section-subtitle animate-on-scroll">Comprehensive solutions to elevate your brand's customer experience</p>
+            
+            <div class="services-grid">
+                <div class="service-card animate-on-scroll">
+                    <div class="service-icon">🎯</div>
+                    <h3>Improving Customer Service</h3>
+                    <p>The first step to delivering meaningful customer experiences is to measure what matters to customers. Our Mystery Shopping services help you understand how your brand is perceived and take action to improve experiences across all touchpoints: onsite, curbside, telephone, online, or through 3rd party delivery partners.</p>
+                </div>
+
+                <div class="service-card animate-on-scroll">
+                    <div class="service-icon">💬</div>
+                    <h3>Customer Support Evaluation</h3>
+                    <p>Mystery Shopping, also known as Secret Shopping, involves trained individuals interacting with your brand as customers to observe and assess their experiences based on specific predefined criteria. This provides objective feedback to unlock your brand's potential.</p>
+                </div>
+
+                <div class="service-card animate-on-scroll">
+                    <div class="service-icon">📊</div>
+                    <h3>Performance Analytics</h3>
+                    <p>Get detailed reports and actionable insights from every mystery shopping visit. We measure compliance, service quality, and operational efficiency to help you make data-driven decisions that improve your bottom line.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">By The Numbers</h2>
+            <div class="stats-grid">
+                <div class="stat-item animate-on-scroll">
+                    <h3>$500</h3>
+                    <p>Per Assignment</p>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <h3>5,000+</h3>
+                    <p>Active Shoppers</p>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <h3>98%</h3>
+                    <p>Client Satisfaction</p>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <h3>24/7</h3>
+                    <p>Support Available</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials-section" id="testimonials">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">What Our Shoppers Say</h2>
+            <p class="section-subtitle animate-on-scroll">Real experiences from our mystery shopping community</p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card animate-on-scroll">
+                    <h3>Angel Bushman</h3>
+                    <p>Great experience and helpful feedback. The assignments are well-structured and the payment is always on time. Will continue doing shops!</p>
+                </div>
+                <div class="testimonial-card animate-on-scroll">
+                    <h3>Melissa Kwarcik</h3>
+                    <p>Excellent partner with responsive support. The team is professional and the opportunities are flexible. Perfect for earning extra income!</p>
+                </div>
+                <div class="testimonial-card animate-on-scroll">
+                    <h3>James Patterson</h3>
+                    <p>I've been mystery shopping with Shoppers for over a year now. The process is seamless and I love being able to help businesses improve while earning money.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="application-section" id="apply">
+        <div class="container">
+            <div class="application-content-grid">
+                <div class="intro-content animate-on-scroll">
+                    <h2 style="text-align: left;">Application Instructions</h2>
+                    <p>We are contracted by businesses to assess their customer service by posing as regular customers. Upon securing a contract, you will receive specific instructions directing you to the relevant company or outlet, along with the necessary funds to complete your task, whether it involves making a purchase or utilizing a service. Following the visit, you will be required to provide a comprehensive report detailing your experience and evaluating staff performance.</p>
+                    
+                    <p>Our services are typically sought by companies that wish to address customer complaints or enhance their service quality by gaining valuable insights into staff behavior and customer interactions.</p>
+                    
+                    <p>Your identity will remain confidential in accordance with the nature of the role, and you will receive <strong>$500 for each completed assignment</strong>, in addition to transportation bonuses and meal allowances when applicable. You will be tasked with evaluating customer service across a variety of retail stores, restaurants, and service providers within your local area.</p>
+                    
+                    <p>This role offers flexibility, allowing you to set your own hours with no long-term commitment required. Apply below to get started!</p>
+                </div>
+
+                <div class="form-container animate-on-scroll">
+                    <h2>Apply Now</h2>
+                    <form id="applicationForm">
+                        <label for="name">Full Name:</label>
+                        <input type="text" id="name" name="name" required placeholder="Your full name">
+
+                        <label for="address">Street Address:</label>
+                        <input type="text" id="address" name="address" required placeholder="Your street address">
+
+                        <div class="form-row">
+                            <div>
+                                <label for="city">City:</label>
+                                <input type="text" id="city" name="city" required placeholder="City">
+                            </div>
+                            <div>
+                                <label for="state">State:</label>
+                                <input type="text" id="state" name="state" required placeholder="State">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div>
+                                <label for="zip">Zip Code:</label>
+                                <input type="text" id="zip" name="zip" required placeholder="Zip Code">
+                            </div>
+                            <div>
+                                <label for="country">Country:</label>
+                                <input type="text" id="country" name="country" required placeholder="Country">
+                            </div>
+                        </div>
+
+                        <label for="phone">Valid Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="Your phone number">
+
+                        <label for="email">Email Address:</label>
+                        <input type="email" id="email" name="email" required placeholder="Your email address">
+
+                        <button type="submit" class="submit-button">SUBMIT APPLICATION</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Shoppers. All rights reserved. Designed with Advanced CSS.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- EXISTING JAVASCRIPT LOGIC ---
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu'); 
+
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            hamburger.classList.toggle('open');
+        });
+        
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+                hamburger.classList.remove('open');
+            });
+        });
+
+        function showApplicationForm() {
+            const applicationSection = document.querySelector('.application-section');
+            applicationSection.classList.add('active');
+            // Ensure application section elements animate on display
+            applicationSection.querySelectorAll('.animate-on-scroll').forEach(el => {
+                el.classList.add('animated');
+            });
+            setTimeout(() => {
+                applicationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100); 
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                
+                if (targetId === '#apply') {
+                    showApplicationForm();
+                } else {
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        document.getElementById('applicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Application submitted successfully! A representative will be in touch soon.');
+            this.reset();
+        });
+        
+        // --- NEW ANIMATION JAVASCRIPT LOGIC ---
+        
+        // Use Intersection Observer for scroll animations
+        const observerOptions = {
+            root: null, // viewport
+            rootMargin: '0px',
+            threshold: 0.2 // Trigger when 20% of the element is visible
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Element is visible, add the animated class
+                    entry.target.classList.add('animated');
+                    // Stop observing once animated
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        // Target all elements marked for animation
+        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+        animatedElements.forEach(element => {
+            observer.observe(element);
+        });
+
+        // Trigger hero content animation immediately on load
+        window.addEventListener('load', () => {
+             document.querySelector('.hero h1').classList.add('animated');
+             document.querySelector('.hero .hero-subtitle').classList.add('animated');
+             document.querySelector('.hero p').classList.add('animated');
+             document.querySelector('.hero .cta-button').classList.add('animated');
+        });
+
+        // Apply animate-on-scroll class to the hero children elements so they can be targeted
+        document.querySelector('.hero h1').classList.add('animate-on-scroll');
+        document.querySelector('.hero .hero-subtitle').classList.add('animate-on-scroll');
+        document.querySelector('.hero p').classList.add('animate-on-scroll');
+        document.querySelector('.hero .cta-button').classList.add('animate-on-scroll');
+        
+    </script>
+</body>
+</html>
